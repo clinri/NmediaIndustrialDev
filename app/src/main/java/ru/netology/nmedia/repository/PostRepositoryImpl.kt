@@ -10,12 +10,13 @@ import ru.netology.nmedia.dto.Post
 import java.util.concurrent.TimeUnit
 
 
-class PostRepositoryImpl: PostRepository {
+class PostRepositoryImpl : PostRepository {
     private val client = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
         .build()
     private val gson = Gson()
-    private val typeToken = object : TypeToken<List<Post>>() {}
+    private val typeTokenListPosts = object : TypeToken<List<Post>>() {}
+    private val typeTokenSinglePost = object : TypeToken<Post>() {}
 
     companion object {
         private const val BASE_URL = "http://10.0.2.2:9999"
@@ -31,12 +32,32 @@ class PostRepositoryImpl: PostRepository {
             .execute()
             .let { it.body?.string() ?: throw RuntimeException("body is null") }
             .let {
-                gson.fromJson(it, typeToken.type)
+                gson.fromJson(it, typeTokenListPosts.type)
             }
     }
 
-    override fun likeById(id: Long) {
-        // TODO: do this in homework
+    override fun likeById(id: Long): Post {
+        val request: Request = Request.Builder()
+            .post("".toRequestBody())
+            .url("${BASE_URL}/api/posts/$id/likes")
+            .build()
+
+        return client.newCall(request)
+            .execute()
+            .let { it.body?.string() ?: throw RuntimeException("body is null") }
+            .let { gson.fromJson(it, typeTokenSinglePost) }
+    }
+
+    override fun dislikeById(id: Long) :Post  {
+        val request: Request = Request.Builder()
+            .delete()
+            .url("${BASE_URL}/api/posts/$id/likes")
+            .build()
+
+       return client.newCall(request)
+            .execute()
+            .let { it.body?.string() ?: throw RuntimeException("body is null") }
+            .let { gson.fromJson(it, typeTokenSinglePost) }
     }
 
     override fun save(post: Post) {
