@@ -42,7 +42,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         _data.value = FeedModel(loading = true)
         repository.getAllAsync(object : PostRepository.PostCallback<List<Post>> {
             override fun onSuccess(posts: List<Post>) {
-                _data.postValue(FeedModel(posts = posts, empty = posts.isEmpty()))
+                _data.value = FeedModel(posts = posts, empty = posts.isEmpty())
             }
 
             override fun onError(e: Exception) {
@@ -55,11 +55,11 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         edited.value?.let {
             repository.saveAsync(it, object : PostRepository.PostCallback<Unit> {
                 override fun onSuccess(data: Unit) {
-                    _postCreated.postValue(data)
+                    _postCreated.value = data
                 }
 
                 override fun onError(e: Exception) {
-                    _data.postValue(FeedModel(error = true))
+                    _data.value = FeedModel(error = true)
                 }
             })
         }
@@ -93,11 +93,11 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun likeById(id: Long) {
         repository.likeByIdAsync(id, object : PostRepository.PostCallback<Post> {
             override fun onSuccess(data: Post) {
-                _data.postValue(getListPostsWithChangedLikeInPost(id, data))
+                _data.value = getListPostsWithChangedLikeInPost(id, data)
             }
 
             override fun onError(e: Exception) {
-                _data.postValue(FeedModel(error = true))
+                _data.value = FeedModel(error = true)
             }
         })
     }
@@ -105,11 +105,11 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun dislikeById(id: Long) {
         repository.dislikeByIdAsync(id, object : PostRepository.PostCallback<Post> {
             override fun onSuccess(data: Post) {
-                _data.postValue(getListPostsWithChangedLikeInPost(id, data))
+                _data.value = getListPostsWithChangedLikeInPost(id, data)
             }
 
             override fun onError(e: Exception) {
-                _data.postValue(FeedModel(error = true))
+                _data.value = FeedModel(error = true)
             }
         })
     }
@@ -126,7 +126,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             override fun onError(e: Exception) {
-                _data.postValue(_data.value?.copy(posts = old))
+                _data.value = _data.value?.copy(posts = old)
             }
         })
     }
