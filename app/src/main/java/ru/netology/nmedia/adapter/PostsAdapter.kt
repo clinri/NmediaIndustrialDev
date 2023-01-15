@@ -1,7 +1,9 @@
 package ru.netology.nmedia.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -45,14 +47,8 @@ class PostViewHolder(
             // в адаптере
             like.isChecked = post.likedByMe
             like.text = "${post.likes}"
-            val url = "http://10.0.2.2:9999/avatars/${post.authorAvatar}"
-            Glide.with(avatar)
-                .load(url)
-                .placeholder(R.drawable.ic_loading_100dp)
-                .error(R.drawable.ic_error_100dp)
-                .timeout(10_000)
-                .into(avatar)
-
+            bindAvatar(avatar, post)
+            bindAttachment(image, post)
 
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
@@ -82,6 +78,31 @@ class PostViewHolder(
                 onInteractionListener.onShare(post)
             }
         }
+    }
+
+    private fun bindAvatar(avatar: ImageView, post: Post) {
+        val url = "http://10.0.2.2:9999/avatars/${post.authorAvatar}"
+        Glide.with(avatar)
+            .load(url)
+            .placeholder(R.drawable.ic_loading_100dp)
+            .error(R.drawable.ic_error_100dp)
+            .timeout(10_000)
+            .circleCrop()
+            .into(avatar)
+    }
+
+    private fun bindAttachment(image: ImageView, post: Post) {
+        post.attachment?.let {
+            if (it.type == "IMAGE") {
+                image.visibility = View.VISIBLE
+                image.contentDescription = it.description
+                val urlImage = "http://10.0.2.2:9999/images/${it.url}"
+                Glide.with(image)
+                    .load(urlImage)
+                    .timeout(10_000)
+                    .into(image)
+            }
+        } ?: let { image.visibility = View.GONE }
     }
 }
 

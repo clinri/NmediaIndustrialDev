@@ -14,16 +14,12 @@ import ru.netology.nmedia.viewmodel.PostViewModel
 
 class NewPostFragment : Fragment() {
 
-    companion object {
-        var Bundle.textArg: String? by StringArg
-    }
-
     private val viewModel: PostViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         val binding = FragmentNewPostBinding.inflate(
             inflater,
@@ -31,8 +27,7 @@ class NewPostFragment : Fragment() {
             false
         )
 
-        arguments?.textArg
-            ?.let(binding.edit::setText)
+        arguments?.textArg?.let(binding.edit::setText)
 
         binding.ok.setOnClickListener {
             viewModel.changeContent(binding.edit.text.toString())
@@ -44,5 +39,9 @@ class NewPostFragment : Fragment() {
             findNavController().navigateUp()
         }
         return binding.root
+    }
+
+    companion object {
+        var Bundle.textArg: String? by StringArg
     }
 }
