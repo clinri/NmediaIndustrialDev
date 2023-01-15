@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.R
+import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
@@ -63,6 +64,16 @@ class FeedFragment : Fragment() {
             binding.emptyText.isVisible = state.empty
         }
 
+        viewModel.navigateToNewPostFragment.observe(viewLifecycleOwner) {
+            findNavController()
+                .navigate(
+                    R.id.action_feedFragment_to_newPostFragment,
+                    Bundle().apply {
+                        textArg = it
+                    }
+                )
+        }
+
         binding.retryButton.setOnClickListener {
             viewModel.loadPosts()
         }
@@ -71,9 +82,9 @@ class FeedFragment : Fragment() {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
         }
 
-        val swiperefresh = binding.swiperefresh
-        swiperefresh.setOnRefreshListener {
-            swiperefresh.isRefreshing = false
+        val swipeRefresh = binding.swipeRefresh
+        swipeRefresh.setOnRefreshListener {
+            swipeRefresh.isRefreshing = false
             viewModel.loadPosts()
         }
 
