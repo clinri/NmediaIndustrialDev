@@ -4,7 +4,7 @@ on:
   push:
     branches: [ master ]
   pull_request:
-    branches: [ master, 06_android_Task_1_Glide ]
+    branches: [ master, 06_android_Task_2_Rounded ]
 
 jobs:
   build:
