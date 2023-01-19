@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import ru.netology.nmedia.R
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.repository.PostRepository
@@ -32,6 +33,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val _postCreated = SingleLiveEvent<Unit>()
     val postCreated: LiveData<Unit>
         get() = _postCreated
+    val eventStateResId = SingleLiveEvent<Int?>()
 
     init {
         loadPosts()
@@ -51,15 +53,32 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
+    fun refreshPosts() {
+        // Начинаем обновление
+        _data.value = _data.value?.copy(loading = true)
+        repository.getAllAsync(object : PostRepository.PostCallback<List<Post>> {
+            override fun onSuccess(posts: List<Post>) {
+                _data.value = FeedModel(posts = posts, empty = posts.isEmpty())
+            }
+
+            override fun onError(e: Exception) {
+                _data.postValue(FeedModel(error = true))
+            }
+        })
+    }
+
     fun save() {
         edited.value?.let {
+            _data.value = _data.value?.copy(loading = true)
             repository.saveAsync(it, object : PostRepository.PostCallback<Unit> {
                 override fun onSuccess(data: Unit) {
                     _postCreated.value = data
+                    eventStateResId.value = R.string.save_success
                 }
 
                 override fun onError(e: Exception) {
                     _data.value = FeedModel(error = true)
+                    eventStateResId.value = R.string.save_error
                 }
             })
         }
@@ -93,10 +112,12 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun likeById(id: Long) {
         repository.likeByIdAsync(id, object : PostRepository.PostCallback<Post> {
             override fun onSuccess(data: Post) {
+                eventStateResId.value = R.string.like_success
                 _data.value = getListPostsWithChangedLikeInPost(id, data)
             }
 
             override fun onError(e: Exception) {
+                eventStateResId.value = R.string.like_error
                 _data.value = FeedModel(error = true)
             }
         })
@@ -105,10 +126,12 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun dislikeById(id: Long) {
         repository.dislikeByIdAsync(id, object : PostRepository.PostCallback<Post> {
             override fun onSuccess(data: Post) {
+                eventStateResId.value = R.string.dislike_success
                 _data.value = getListPostsWithChangedLikeInPost(id, data)
             }
 
             override fun onError(e: Exception) {
+                eventStateResId.value = R.string.dislike_error
                 _data.value = FeedModel(error = true)
             }
         })
@@ -123,9 +146,11 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         )
         repository.removeByIdAsync(id, object : PostRepository.PostCallback<Unit> {
             override fun onSuccess(data: Unit) {
+                eventStateResId.value = R.string.remove_success
             }
 
             override fun onError(e: Exception) {
+                eventStateResId.value = R.string.remove_error
                 _data.value = _data.value?.copy(posts = old)
             }
         })

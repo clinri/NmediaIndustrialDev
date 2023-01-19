@@ -20,4 +20,12 @@
     <string name="notification_user_liked">User %1$s liked %2$s\'s post</string>
     <string name="channel_remote_name">Server notifications</string>
     <string name="channel_remote_description">Notifications from remote server</string>
+    <string name="save_error" translatable="false">Error, try again later...</string>
+    <string name="save_success" translatable="false">Success, post has saved!</string>
+    <string name="remove_error" translatable="false">Error removing post...</string>
+    <string name="remove_success" translatable="false">Success, post has removed!</string>
+    <string name="dislike_error" translatable="false">Error while disliking...</string>
+    <string name="dislike_success" translatable="false">Success, post has disliked!</string>
+    <string name="like_error" translatable="false">Error while liking...</string>
+    <string name="like_success" translatable="false">Success, post has liked!</string>
 </resources>

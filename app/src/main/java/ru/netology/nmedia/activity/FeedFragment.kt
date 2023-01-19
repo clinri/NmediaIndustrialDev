@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -64,6 +65,16 @@ class FeedFragment : Fragment() {
             binding.emptyText.isVisible = state.empty
         }
 
+        viewModel.eventStateResId.observe(viewLifecycleOwner) {
+            it?.let {
+                Toast.makeText(
+                    activity,
+                    activity?.getString(it),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
         viewModel.navigateToNewPostFragment.observe(viewLifecycleOwner) {
             findNavController()
                 .navigate(
@@ -82,10 +93,9 @@ class FeedFragment : Fragment() {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
         }
 
-        val swipeRefresh = binding.swipeRefresh
-        swipeRefresh.setOnRefreshListener {
-            swipeRefresh.isRefreshing = false
-            viewModel.loadPosts()
+        binding.swipeRefresh.setOnRefreshListener {
+            viewModel.refreshPosts()
+            binding.swipeRefresh.isRefreshing = false
         }
 
         return binding.root

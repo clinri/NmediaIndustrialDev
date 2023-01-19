@@ -105,6 +105,7 @@ class PostRepositoryImpl : PostRepository {
                     response.body() ?: run {
                         callback.onError(Exception("Body is null"))
                     }
+                    callback.onSuccess(Unit)
                 }
 
                 override fun onFailure(call: Call<Unit>, t: Throwable) {
